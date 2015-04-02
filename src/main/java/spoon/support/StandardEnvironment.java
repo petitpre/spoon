@@ -81,7 +81,7 @@ public class StandardEnvironment implements Serializable, Environment {
 
 	private boolean verbose = false;
 
-	private boolean autoImports = true;
+	private boolean autoImports = false;
 
 	private int warningCount = 0;
 
@@ -347,16 +347,6 @@ public class StandardEnvironment implements Serializable, Environment {
 			CtElement element, String message, ProblemFixer<?>... fix) {
 		// Fix not (yet) used in command-line mode
 		report(processor, severity, element, message);
-	}
-
-	public boolean isUsingSourceCodeFragments() {
-		return useSourceCodeFragments;
-	}
-
-	boolean useSourceCodeFragments = false;
-
-	public void useSourceCodeFragments(boolean b) {
-		useSourceCodeFragments = b;
 	}
 
 	boolean useTabulations = false;

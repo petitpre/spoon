@@ -50,17 +50,23 @@ import spoon.support.util.RtHelper;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
 
-public abstract class CtElementImpl implements CtElement, Serializable {
+/** 
+ * Contains the default implementation of most CtElement methods.
+ * 
+ * Implements Comparable for being used in TreeSet
+ */
+public abstract class CtElementImpl implements CtElement, Serializable , Comparable<CtElement>{
 
 	protected static final Logger logger = Logger
 			.getLogger(CtElementImpl.class);
 
-	private static final CtElement ROOT_ELEMENT = new CtElementImpl() {
+	private static class RootElement extends CtElementImpl {
 		private static final long serialVersionUID = 1L;
+		
+		protected static  RootElement ROOT = new RootElement();
 
 		public void accept(spoon.reflect.visitor.CtVisitor visitor) {
 		};
-		
 		@Override
 		public CtElement getParent() throws ParentNotInitializedException {
 			return null;
@@ -116,7 +122,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	public CtElementImpl() {
 		super();
-		setParent(this.ROOT_ELEMENT);
+		setParent(RootElement.ROOT);
 	}
 
 	public int compareTo(CtElement o) {
@@ -168,7 +174,7 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	}
 
 	public CtElement getParentNoExceptions() {
-		if (parent == ROOT_ELEMENT) {
+		if (isRootElement()) {
 			return null;
 		}
 		return parent;
@@ -197,13 +203,13 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public boolean isRootElement() {
-		return parent == ROOT_ELEMENT;
+		return (parent instanceof RootElement);
 	}
 
 	@Override
 	public void setRootElement(boolean rootElement) {
 		if (rootElement) {
-			parent = ROOT_ELEMENT;
+			parent = RootElement.ROOT;
 		} else {
 			parent = null;
 		}
@@ -357,8 +363,8 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 
 	@Override
 	public String toString() {
-		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(
-				getFactory().getEnvironment());
+		DefaultJavaPrettyPrinter printer = new DefaultJavaPrettyPrinter(getFactory().getEnvironment());
+		printer.computeImports(this);
 		printer.scan(this);
 		return printer.toString();
 	}
@@ -405,5 +411,5 @@ public abstract class CtElementImpl implements CtElement, Serializable {
 	public boolean isParentInitialized() {
 		return parent != null;
 	}
-
+	
 }
