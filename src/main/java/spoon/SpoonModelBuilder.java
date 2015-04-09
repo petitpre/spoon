@@ -18,7 +18,6 @@
 package spoon;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
@@ -136,7 +135,7 @@ public interface SpoonModelBuilder {
 	 * @return true if the Java was successfully compiled with the core Java
 	 *         compiler, false if some errors were encountered while compiling
 	 * 
-	 * @exception Exception
+	 * @exception spoon.SpoonException
 	 *                when a building problem occurs
 	 * 
 	 * @see #getSourceClasspath()

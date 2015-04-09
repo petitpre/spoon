@@ -83,7 +83,6 @@ import spoon.reflect.declaration.CtModifiable;
 import spoon.reflect.declaration.CtNamedElement;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtTypeParameter;
 import spoon.reflect.declaration.ModifierKind;
@@ -104,6 +103,7 @@ import spoon.support.reflect.cu.CtLineElementComparator;
 import spoon.support.util.SortedList;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -143,7 +143,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 		Stack<CtElement> elementStack = new Stack<CtElement>();
 
-		CtSimpleType<?> currentTopLevel;
+		CtType<?> currentTopLevel;
 
 		boolean ignoreGenerics = false;
 
@@ -356,7 +356,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Make the imports for a given type.
 	 */
-	public Collection<CtTypeReference<?>> computeImports(CtSimpleType<?> type) {
+	public Collection<CtTypeReference<?>> computeImports(CtType<?> type) {
 		if (env.isAutoImports()) {
 			context.currentTopLevel = type;
 			return importsContext.computeImports(context.currentTopLevel);
@@ -639,7 +639,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 
 	public <A extends Annotation> void visitCtAnnotationType(
 			CtAnnotationType<A> annotationType) {
-		visitCtSimpleType(annotationType);
+		visitCtType(annotationType);
 		write("@interface " + annotationType.getSimpleName() + " {").incTab();
 
 		SortedList<CtElement> lst = new SortedList<CtElement>(
@@ -934,13 +934,13 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 				write(")");
 			}
 			if (constructorCall instanceof CtNewClass) {
-				scan(((CtNewClass) constructorCall).getAnonymousClass());
+				scan(((CtNewClass<?>) constructorCall).getAnonymousClass());
 			}
 		}
 	}
 
 	public <T extends Enum<?>> void visitCtEnum(CtEnum<T> ctEnum) {
-		visitCtSimpleType(ctEnum);
+		visitCtType(ctEnum);
 		write("enum " + ctEnum.getSimpleName());
 		if (ctEnum.getSuperInterfaces().size() > 0) {
 			write(" implements ");
@@ -1738,7 +1738,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		scan(returnStatement.getReturnedExpression());
 	}
 
-	<T> void visitCtSimpleType(CtSimpleType<T> type) {
+	<T> void visitCtType(CtType<T> type) {
 		mapLine(line, type);
 		if (type.isTopLevel()) {
 			context.currentTopLevel = type;
@@ -1824,10 +1824,6 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		}
 	}
 
-	<T> void visitCtType(CtType<T> type) {
-		visitCtSimpleType(type);
-	}
-
 	public void visitCtTypeParameter(CtTypeParameter typeParameter) {
 		write(typeParameter.getName());
 		if (!typeParameter.getBounds().isEmpty()) {
@@ -1877,13 +1873,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		} else {
 			if (ref.getDeclaringType() != null) {
 				if (!context.currentThis.contains(ref.getDeclaringType())
-						|| ref.getModifiers().contains(ModifierKind.STATIC)) {
+						|| ref.getModifiers().contains(ModifierKind.STATIC)
+						|| hasDeclaringTypeWithGenerics(ref)) {
 					if (!context.ignoreEnclosingClass) {
-						//						boolean ign = context.ignoreGenerics;
-						//						context.ignoreGenerics = false;
+						boolean ign = context.ignoreGenerics;
+						context.ignoreGenerics = false;
 						scan(ref.getDeclaringType());
 						write(".");
-						//						context.ignoreGenerics = ign;
+						context.ignoreGenerics = ign;
 					}
 				}
 				write(ref.getSimpleName());
@@ -1897,6 +1894,33 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 		if (!context.ignoreGenerics) {
 			writeGenericsParameter(ref.getActualTypeArguments());
 		}
+	}
+
+	private <T> boolean hasDeclaringTypeWithGenerics(CtTypeReference<T> reference) {
+		// If current reference use generic types, we don't need this hack.
+		if (reference.getActualTypeArguments().size() != 0) {
+			return false;
+		}
+		// If current reference is a class declared in a method, we don't need this hack.
+		if (reference.getDeclaration() == null) {
+			return false;
+		}
+		if (reference.getDeclaration().getParent(CtMethod.class) != null) {
+			return false;
+		}
+		// If the declaring type isn't a CtType, we don't need this hack.
+		if (reference.getDeclaringType() == null) {
+			return false;
+		}
+		final CtElement declaration = reference.getDeclaringType().getDeclaration();
+		if (declaration == null) {
+			return false;
+		}
+		if (!(declaration instanceof CtType)) {
+			return false;
+		}
+		// Checks if the declaring type has generic types.
+		return ((CtType) declaration).getFormalTypeParameters().size() != 0;
 	}
 
 	@Override
@@ -2048,7 +2072,7 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	/**
 	 * Write the compilation unit header.
 	 */
-	public DefaultJavaPrettyPrinter writeHeader(List<CtSimpleType<?>> types,
+	public DefaultJavaPrettyPrinter writeHeader(List<CtType<?>> types,
 			Collection<CtTypeReference<?>> imports) {
 		if (!types.isEmpty()) {
 			CtPackage pack = types.get(0).getPackage();
@@ -2204,14 +2228,14 @@ public class DefaultJavaPrettyPrinter implements CtVisitor, PrettyPrinter {
 	private CompilationUnit sourceCompilationUnit;
 
 	public void calculate(CompilationUnit sourceCompilationUnit,
-			List<CtSimpleType<?>> types) {
+			List<CtType<?>> types) {
 		this.sourceCompilationUnit = sourceCompilationUnit;
 		Collection<CtTypeReference<?>> imports = Collections.EMPTY_LIST;
-		for (CtSimpleType<?> t : types) {
+		for (CtType<?> t : types) {
 			imports = computeImports(t);
 		}
 		writeHeader(types, imports);
-		for (CtSimpleType<?> t : types) {
+		for (CtType<?> t : types) {
 			scan(t);
 			writeln().writeln().writeTabs();
 		}

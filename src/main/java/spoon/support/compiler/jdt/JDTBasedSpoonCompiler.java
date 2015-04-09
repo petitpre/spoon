@@ -46,7 +46,6 @@ import org.eclipse.jdt.internal.compiler.util.Util;
 
 import spoon.Launcher;
 import spoon.OutputType;
-import spoon.SpoonAPI;
 import spoon.SpoonException;
 import spoon.compiler.Environment;
 import spoon.compiler.ModelBuildingException;
@@ -58,7 +57,7 @@ import spoon.compiler.SpoonResourceHelper;
 import spoon.processing.ProcessingManager;
 import spoon.processing.Severity;
 import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
 import spoon.reflect.visitor.PrettyPrinter;
@@ -754,7 +753,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 			factory.getEnvironment().debugMessage(
 					"Generating source for compilation unit: " + cu.getFile());
 
-			CtSimpleType<?> element = cu.getMainType();
+			CtType<?> element = cu.getMainType();
 
 			CtPackage pack = element.getPackage();
 
@@ -823,7 +822,7 @@ public class JDTBasedSpoonCompiler implements SpoonCompiler {
 		Environment env = factory.getEnvironment();
 		spoon.reflect.cu.CompilationUnit cu = factory.CompilationUnit()
 				.getMap().get(path);
-		List<CtSimpleType<?>> toBePrinted = cu.getDeclaredTypes();
+		List<CtType<?>> toBePrinted = cu.getDeclaredTypes();
 
 		PrettyPrinter printer = null;
 

@@ -2,10 +2,10 @@ package spoon.support.compiler.jdt;
 
 import java.util.ArrayList;
 
-import org.eclipse.jdt.internal.compiler.ast.ASTNode;
 import org.eclipse.jdt.internal.compiler.ast.QualifiedAllocationExpression;
 import org.eclipse.jdt.internal.compiler.lookup.LocalTypeBinding;
 import org.eclipse.jdt.internal.compiler.lookup.ReferenceBinding;
+
 import spoon.reflect.code.CtArrayAccess;
 import spoon.reflect.code.CtAssert;
 import spoon.reflect.code.CtAssignment;
@@ -36,7 +36,6 @@ import spoon.reflect.code.CtTargetedExpression;
 import spoon.reflect.code.CtThrow;
 import spoon.reflect.code.CtTry;
 import spoon.reflect.code.CtTryWithResource;
-import spoon.reflect.code.CtTypeAccess;
 import spoon.reflect.code.CtUnaryOperator;
 import spoon.reflect.code.CtVariableAccess;
 import spoon.reflect.code.CtWhile;
@@ -51,7 +50,6 @@ import spoon.reflect.declaration.CtGenericElement;
 import spoon.reflect.declaration.CtMethod;
 import spoon.reflect.declaration.CtPackage;
 import spoon.reflect.declaration.CtParameter;
-import spoon.reflect.declaration.CtSimpleType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtVariable;
 import spoon.reflect.reference.CtFieldReference;
@@ -104,24 +102,7 @@ public class ParentExiter extends CtInheritanceScanner {
 		}
 		super.scanCtLoop(loop);
 	}
-
-	@Override
-	public <T> void scanCtSimpleType(CtSimpleType<T> t) {
-		if (child instanceof CtSimpleType) {
-			if (t.getNestedTypes().contains(child)) {
-				t.getNestedTypes().remove(child);
-			}
-			t.addNestedType((CtSimpleType<?>) child);
-			return;
-		} else if (child instanceof CtField) {
-			t.addField((CtField<?>) child);
-			return;
-		} else if (child instanceof CtConstructor) {
-			return;
-		}
-		super.scanCtSimpleType(t);
-	}
-
+ 
 	@Override
 	public <T, E extends CtExpression<?>> void scanCtTargetedExpression(
 			CtTargetedExpression<T, E> targetedExpression) {
@@ -135,6 +116,18 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public <T> void scanCtType(CtType<T> type) {
+		if (child instanceof CtType) {
+			if (type.getNestedTypes().contains(child)) {
+				type.getNestedTypes().remove(child);
+			}
+			type.addNestedType((CtType<?>) child);
+			return;
+		} else if (child instanceof CtField) {
+			type.addField((CtField<?>) child);
+			return;
+		} else if (child instanceof CtConstructor) {
+			return;
+		}
 		if (child instanceof CtMethod) {
 			type.addMethod((CtMethod<?>) child);
 			return;
@@ -459,16 +452,16 @@ public class ParentExiter extends CtInheritanceScanner {
 
 	@Override
 	public void visitCtPackage(CtPackage ctPackage) {
-		if (child instanceof CtSimpleType) {
+		if (child instanceof CtType) {
 			if (ctPackage.getTypes().contains(child)) {
 				ctPackage.getTypes().remove(child);
 			}
-			ctPackage.getTypes().add((CtSimpleType<?>) child);
-			this.jdtTreeBuilder.context.addCreatedType((CtSimpleType<?>) child);
+			ctPackage.getTypes().add((CtType<?>) child);
+			this.jdtTreeBuilder.context.addCreatedType((CtType<?>) child);
 			if (child.getPosition() != null
 					&& child.getPosition().getCompilationUnit() != null) {
 				child.getPosition().getCompilationUnit().getDeclaredTypes()
-						.add((CtSimpleType<?>) child);
+						.add((CtType<?>) child);
 			}
 			return;
 		}

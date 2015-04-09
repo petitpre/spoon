@@ -32,7 +32,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtConstructor;
 import spoon.reflect.declaration.CtExecutable;
 import spoon.reflect.declaration.CtMethod;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ModifierKind;
 import spoon.reflect.reference.CtExecutableReference;
@@ -181,7 +181,7 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		if ((subType == null) || subType.equals(getDeclaringType())) {
 			return null;
 		}
-		CtSimpleType<?> t = subType.getDeclaration();
+		CtType<?> t = (CtType<?>) subType.getDeclaration();
 		if (t == null) {
 			return null;
 		}
@@ -327,9 +327,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		CtExecutable<T> e = getDeclaration();
 		if (e != null) {
 			if (e instanceof CtMethod) {
-				return ((CtMethod) e).hasModifier(ModifierKind.FINAL);
+				return ((CtMethod<T>) e).hasModifier(ModifierKind.FINAL);
 			} else if (e instanceof CtConstructor) {
-				return ((CtConstructor) e).hasModifier(ModifierKind.FINAL);
+				return ((CtConstructor<T>) e).hasModifier(ModifierKind.FINAL);
 			}
 			return false;
 		}
@@ -341,9 +341,9 @@ public class CtExecutableReferenceImpl<T> extends CtReferenceImpl implements
 		CtExecutable<T> e = getDeclaration();
 		if (e != null) {
 			if (e instanceof CtMethod) {
-				return ((CtMethod) e).getModifiers();
+				return ((CtMethod<T>) e).getModifiers();
 			} else if (e instanceof CtConstructor) {
-				return ((CtConstructor) e).getModifiers();
+				return ((CtConstructor<T>) e).getModifiers();
 			}
 			return CtElementImpl.EMPTY_SET();
 		}

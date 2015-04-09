@@ -6,13 +6,11 @@ import java.util.Set;
 
 import spoon.reflect.code.CtFieldAccess;
 import spoon.reflect.code.CtSuperAccess;
-import spoon.reflect.code.CtTargetedAccess;
-import spoon.reflect.code.CtThisAccess;
 import spoon.reflect.declaration.CtAnnotationType;
 import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtEnum;
 import spoon.reflect.declaration.CtInterface;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtArrayTypeReference;
 import spoon.reflect.reference.CtExecutableReference;
 import spoon.reflect.reference.CtFieldReference;
@@ -130,7 +128,7 @@ public class TypeReferenceScanner extends CtScanner {
 	@Override
 	public <T> void visitCtInterface(CtInterface<T> intrface) {
 		addReference(intrface.getReference());
-		for (CtSimpleType<?> t : intrface.getNestedTypes()) {
+		for (CtType<?> t : intrface.getNestedTypes()) {
 			addReference(t.getReference());
 		}
 		super.visitCtInterface(intrface);
@@ -139,7 +137,7 @@ public class TypeReferenceScanner extends CtScanner {
 	@Override
 	public <T> void visitCtClass(CtClass<T> ctClass) {
 		addReference(ctClass.getReference());
-		for (CtSimpleType<?> t : ctClass.getNestedTypes()) {
+		for (CtType<?> t : ctClass.getNestedTypes()) {
 			addReference(t.getReference());
 		}
 		super.visitCtClass(ctClass);

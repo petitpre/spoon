@@ -24,7 +24,6 @@ import spoon.processing.FactoryAccessor;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.visitor.CtVisitable;
-import spoon.reflect.visitor.CtVisitor;
 import spoon.reflect.visitor.Root;
 
 /**
@@ -55,8 +54,6 @@ public interface CtReference extends FactoryAccessor, CtVisitable {
 	 * @return referenced element or null if element does not exist
 	 */
 	CtElement getDeclaration();
-
-
 
 	/**
 	 * Searches for an annotation (proxy) of the given class that annotates the

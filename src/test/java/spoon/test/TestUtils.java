@@ -3,7 +3,7 @@ package spoon.test;
 import spoon.Launcher;
 import spoon.compiler.SpoonCompiler;
 import spoon.compiler.SpoonResourceHelper;
-import spoon.reflect.declaration.CtSimpleType;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.factory.FactoryImpl;
 import spoon.support.DefaultCoreFactory;
@@ -19,7 +19,7 @@ public class TestUtils {
 				new StandardEnvironment());
 	}
 	
-	public static <T extends CtSimpleType<?>> T build(String packageName,
+	public static <T extends CtType<?>> T build(String packageName,
 			String className) throws Exception {
 		SpoonCompiler comp = new Launcher().createCompiler();
 		comp.addInputSources(SpoonResourceHelper.resources("./src/test/java/"
@@ -28,7 +28,7 @@ public class TestUtils {
 		return comp.getFactory().Package().get(packageName).getType(className);
 	}
 
-	public static <T extends CtSimpleType<?>> T build(String packageName,
+	public static <T extends CtType<?>> T build(String packageName,
 			String className, final Factory f) throws Exception {
 		Launcher launcher = new Launcher() {
 			@Override
@@ -53,17 +53,20 @@ public class TestUtils {
 		return comp.getFactory();
 	}
 
-	public static void canBeBuild(File testDirectory, int complianceLevel) throws IOException {
+	public static void canBeBuild(File outputDirectoryFile, int complianceLevel) throws IOException {
 		final Launcher launcher = new Launcher();
 		final Factory factory = launcher.createFactory();
 		factory.getEnvironment().setComplianceLevel(complianceLevel);
 		final SpoonCompiler compiler = launcher.createCompiler(factory);
-		compiler.addInputSource(testDirectory);
+		compiler.addInputSource(outputDirectoryFile);
 		try {
 			compiler.build();
 		} catch (Exception e) {
-			throw new AssertionError("Can't compile " + testDirectory.getName(), e);
+			throw new AssertionError("Can't compile " + outputDirectoryFile.getName(), e);
 		}
 	}
 
+	public static void canBeBuild(String outputDirectory, int complianceLevel) throws IOException {
+		canBeBuild(new File(outputDirectory), complianceLevel);
+	}
 }
