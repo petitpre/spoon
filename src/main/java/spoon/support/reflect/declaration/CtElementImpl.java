@@ -238,9 +238,6 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		if (position != null) {
 			return position;
 		}
-		if (isParentInitialized() && !isRootElement()) {
-			return getParentNoExceptions().getPosition();
-		}
 		return null;
 	}
 
