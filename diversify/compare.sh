@@ -34,8 +34,8 @@ processors=(
 #    "cohen.process.ReplaceVarDeclarationsProcessor"
     "cohen.process.ReverseIf"
     "cohen.process.ThreadCreationProcessor"
- )
-
+)
+ 
 for processor in "${processors[@]}"
 do
     echo $processor
