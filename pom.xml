@@ -17,171 +17,12 @@
     <url>http://spoon.gforge.inria.fr/</url>
     <inceptionYear>2007</inceptionYear>
 
-    <licenses>
-        <license>
-            <name>CeCILL-C</name>
-            <comments>French equivalent to LGPL</comments>
-            <url>http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <organization>
-        <name>Inria</name>
-        <url>http://www.inria.fr</url>
-    </organization>
-
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/INRIA/spoon/issues</url>
-    </issueManagement>
-
-    <mailingLists>
-        <mailingList>
-            <name>spoon-discuss</name>
-            <subscribe>http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss</subscribe>
-            <unsubscribe>http://lists.gforge.inria.fr/mailman/listinfo/spoon-discuss</unsubscribe>
-            <archive>http://lists.gforge.inria.fr/pipermail/spoon-discuss/</archive>
-        </mailingList>
-    </mailingLists>
-
-    <!-- to generate the list for the README -->
-    <!-- xmlstarlet sel -t -m "//_:developer/_:name" -o "* " -v . -n  pom.xml -->
-    <developers>
-        <developer>
-            <name>Olivier Barais</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>David Bernard</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Benoit Cornu</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Didier Donsez</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Favio DeMarco</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Christophe Dufour</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Sebastian Lamelas Marcote</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Matias Martinez</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Martin Monperrus</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Carlos Noguera</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Renaud Pawlak</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Nicolas Pessemier</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Nicolas Petitprez</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Phillip Schichtel</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Lionel Seinturier</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Stefan Wolf</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-        <developer>
-            <name>Gérard Paligot</name>
-            <roles>
-                <role>Contributor</role>
-            </roles>
-        </developer>
-    </developers>
-
-    <scm>
-        <url>https://gforge.inria.fr/scm/viewvc.php/?root=spoon</url>
-        <connection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</connection>
-        <developerConnection>scm:git:ssh://scm.gforge.inria.fr/home/groups/spoon/spoon.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
-
     <properties>
-        <java.src.version>1.6</java.src.version>
+        <java.src.version>1.8</java.src.version>
         <java.test.version>1.8</java.test.version>
         <runtime.log>target/velocity.log</runtime.log>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
-    <distributionManagement>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-        <snapshotRepository>
-            <id>gforge.inria.fr-snapshot</id>
-            <name>inria-snapshots</name>
-            <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/repositories/snapshots</url>
-        </snapshotRepository>
-        <site>
-            <id>gforge.inria.fr-site</id>
-            <name>inria</name>
-            <url>scp://scm.gforge.inria.fr/home/groups/spoon/htdocs/mvnsites/spoon-core</url>
-        </site>
-    </distributionManagement>
 
     <dependencies>
         <dependency>
@@ -262,6 +103,45 @@
                     <testTarget>${java.test.version}</testTarget>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>spoon.Launcher</mainClass>
+                            <addClasspath>true</addClasspath>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>spoon.Launcher</mainClass>
+                        </manifest>
+                    </archive>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                        <!-- descriptorRef>project</descriptorRef -->
+                    </descriptorRefs>
+                    <!-- descriptor>src/main/assembly/project.xml</descriptor -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id><!-- this is used for inheritance merges -->
+                        <phase>package</phase><!-- append to the packaging phase. -->
+                        <goals>
+                            <goal>attached</goal><!-- goals == mojos -->
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
         </plugins>
     </build>
@@ -288,6 +168,51 @@
                         <configuration>
                             <processors>
                                 <processor>${processor}</processor>
+                            </processors>
+                            <compliance>8</compliance>
+                        </configuration>
+                        <dependencies>
+                            <dependency>
+                                <groupId>fr.inria.diversify</groupId>
+                                <artifactId>SpoonProcessors</artifactId>
+                                <version>1.1-SNAPSHOT</version>
+                            </dependency>
+                            <dependency>
+                                <groupId>fr.inria.gforge.spoon</groupId>
+                                <artifactId>spoon-core</artifactId>
+                                <version>4.3.0-SNAPSHOT</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>diversify-all</id>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>fr.inria.gforge.spoon</groupId>
+                        <artifactId>spoon-maven-plugin</artifactId>
+                        <version>3.0-SNAPSHOT</version>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+
+                        <configuration>
+                            <processors>
+                                <processor>fr.inria.diversify.EncryptLiteralProcessor</processor>
+                                <processor>fr.inria.diversify.FantomProcessor</processor>
+                                <processor>fr.inria.diversify.InvertIfProcessor</processor>
+                                <processor>fr.inria.diversify.VariableDeclaration</processor>
                             </processors>
                             <compliance>8</compliance>
                         </configuration>
