@@ -1,16 +1,16 @@
-/* 
+/*
  * Spoon - http://spoon.gforge.inria.fr/
  * Copyright (C) 2006 INRIA Futurs <renaud.pawlak@inria.fr>
- * 
+ *
  * This software is governed by the CeCILL-C License under French law and
- * abiding by the rules of distribution of free software. You can use, modify 
- * and/or redistribute the software under the terms of the CeCILL-C license as 
- * circulated by CEA, CNRS and INRIA at http://www.cecill.info. 
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT 
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or 
+ * abiding by the rules of distribution of free software. You can use, modify
+ * and/or redistribute the software under the terms of the CeCILL-C license as
+ * circulated by CEA, CNRS and INRIA at http://www.cecill.info.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT
+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
  * FITNESS FOR A PARTICULAR PURPOSE. See the CeCILL-C License for more details.
- *  
+ *
  * The fact that you are presently reading this means that you have had
  * knowledge of the CeCILL-C license and that you accept its terms.
  */
@@ -36,6 +36,7 @@ import spoon.reflect.cu.SourcePosition;
 import spoon.reflect.declaration.CtAnnotation;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtNamedElement;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.declaration.ParentNotInitializedException;
 import spoon.reflect.factory.Factory;
 import spoon.reflect.reference.CtReference;
@@ -51,9 +52,9 @@ import spoon.support.util.RtHelper;
 import spoon.support.visitor.SignaturePrinter;
 import spoon.support.visitor.TypeReferenceScanner;
 
-/** 
+/**
  * Contains the default implementation of most CtElement methods.
- * 
+ *
  * Implements Comparable for being used in TreeSet
  */
 public abstract class CtElementImpl implements CtElement, Serializable , Comparable<CtElement>{
@@ -61,10 +62,12 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	protected static final Logger logger = Logger
 			.getLogger(CtElementImpl.class);
 
-	// we don't use Collections.unmodifiableList and Collections.unmodifiableSet 
+	// we don't use Collections.unmodifiableList and Collections.unmodifiableSet
 	// because we need clear() for all set* methods
 	// and UnmodifiableList and unmodifiableCollection are not overridable (not visible grrrr)
 	private static class UNMODIFIABLE_COLLECTION extends ArrayList<Object> implements Set<Object> {
+		private static final long serialVersionUID = 1L;
+
 		@Override
 		public Object set(int index, Object element) {
 			throw new UnsupportedOperationException();
@@ -86,7 +89,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		}
 
 		@Override
-		public Object[] toArray(java.lang.Object[] a) {
+		public <T> T[] toArray(T[] a) {
 			throw new UnsupportedOperationException();
 		}
 
@@ -185,7 +188,7 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	public <A extends Annotation> A getAnnotation(Class<A> annotationType) {
 		for (CtAnnotation<? extends Annotation> a : getAnnotations()) {
 			if (a.getAnnotationType().toString()
-					.equals(annotationType.getName().replace('$','.'))) {
+					.equals(annotationType.getName().replace('$', '.'))) {
 				return ((CtAnnotation<A>) a).getActualAnnotation();
 			}
 		}
@@ -323,21 +326,23 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		return o1 == o2;
 	}
 
-	public void setAnnotations(
+	public <E extends CtElement> E setAnnotations(
 			List<CtAnnotation<? extends Annotation>> annotations) {
 		this.annotations.clear();
 		for (CtAnnotation<? extends Annotation> annot: annotations) {
 			addAnnotation(annot);
 		}
+		return (E) this;
 	}
 
-	public boolean addAnnotation(CtAnnotation<? extends Annotation> annotation) {
+	public <E extends CtElement> E addAnnotation(CtAnnotation<? extends Annotation> annotation) {
 		if ((List<?>) this.annotations == (List<?>) EMPTY_LIST()) {
 			this.annotations = new ArrayList<CtAnnotation<? extends Annotation>>(
 					ANNOTATIONS_CONTAINER_DEFAULT_CAPACITY);
 		}
 		annotation.setParent(this);
-		return this.annotations.add(annotation);
+		this.annotations.add(annotation);
+		return (E) this;
 	}
 
 	public boolean removeAnnotation(
@@ -346,25 +351,29 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 				this.annotations.remove(annotation);
 	}
 
-	public void setDocComment(String docComment) {
+	public <E extends CtElement> E setDocComment(String docComment) {
 		this.docComment = docComment;
+		return (E) this;
 	}
 
-	public void setParent(CtElement parentElement) {
+	public <E extends CtElement> E setParent(CtElement parentElement) {
 		this.parent = parentElement;
+		return (E) this;
 	}
 
-	public void setPosition(SourcePosition position) {
+	public <E extends CtElement> E setPosition(SourcePosition position) {
 		this.position = position;
+		return (E) this;
 	}
 
-	public void setPositions(final SourcePosition position) {
+	public <E extends CtElement> E setPositions(final SourcePosition position) {
 		accept(new CtScanner() {
 			@Override
 			public void enter(CtElement e) {
 				e.setPosition(position);
 			}
 		});
+		return (E) this;
 	}
 
 	@Override
@@ -389,8 +398,9 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 		return implicit;
 	}
 
-	public void setImplicit(boolean implicit) {
+	public <E extends CtElement> E setImplicit(boolean implicit) {
 		this.implicit = implicit;
+		return (E) this;
 	}
 
 	public Set<CtTypeReference<?>> getReferencedTypes() {
@@ -417,5 +427,5 @@ public abstract class CtElementImpl implements CtElement, Serializable , Compara
 	public boolean isParentInitialized() {
 		return parent != null;
 	}
-	
+
 }

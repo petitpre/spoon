@@ -639,6 +639,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 		scanCtTargetedExpression(e);
 		scanCtAbstractInvocation(e);
 		scanCtStatement(e);
+		scanCtGenericElementReference(e);
 		scanCtExpression(e);
 		scanCtElement(e);
 		scanCtCodeElement(e);
@@ -750,6 +751,7 @@ public abstract class CtInheritanceScanner implements CtVisitor {
 	}
 
 	public void visitCtTypeParameter(CtTypeParameter e) {
+		scanCtNamedElement(e);
 		scanCtElement(e);
 		scanCtVisitable(e);
 	}
