@@ -11,7 +11,7 @@
     <groupId>fr.inria.gforge.spoon</groupId>
     <artifactId>spoon-core</artifactId>
     <packaging>jar</packaging>
-    <version>4.3.0-SNAPSHOT</version>
+    <version>4.3.0-DIVERSIFY</version>
     <name>Spoon Core</name>
     <description>Spoon is a tool for meta-programming, analysis and transformation of Java programs.</description>
     <url>http://spoon.gforge.inria.fr/</url>
@@ -149,7 +149,6 @@
     <profiles>
         <profile>
             <id>diversify</id>
-
             <build>
                 <plugins>
                     <plugin>
@@ -175,7 +174,7 @@
                             <dependency>
                                 <groupId>fr.inria.diversify</groupId>
                                 <artifactId>SpoonProcessors</artifactId>
-                                <version>1.1-SNAPSHOT</version>
+                                <version>1.2-SNAPSHOT</version>
                             </dependency>
                             <dependency>
                                 <groupId>fr.inria.gforge.spoon</groupId>
@@ -209,10 +208,10 @@
 
                         <configuration>
                             <processors>
-                                <processor>fr.inria.diversify.EncryptLiteralProcessor</processor>
+                                <processor>fr.inria.diversify.VariableDeclaration</processor>
                                 <processor>fr.inria.diversify.FantomProcessor</processor>
                                 <processor>fr.inria.diversify.InvertIfProcessor</processor>
-                                <processor>fr.inria.diversify.VariableDeclaration</processor>
+                                <processor>fr.inria.diversify.EncryptLiteralProcessor</processor>
                             </processors>
                             <compliance>8</compliance>
                         </configuration>
@@ -220,7 +219,7 @@
                             <dependency>
                                 <groupId>fr.inria.diversify</groupId>
                                 <artifactId>SpoonProcessors</artifactId>
-                                <version>1.1-SNAPSHOT</version>
+                                <version>1.2-SNAPSHOT</version>
                             </dependency>
                             <dependency>
                                 <groupId>fr.inria.gforge.spoon</groupId>

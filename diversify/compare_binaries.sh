@@ -10,17 +10,29 @@ function test {
     return $status
 }
 
+function compare {
+    result=$( test java -jar diversify/Diffcompule-1.0-SNAPSHOT-jar-with-dependencies.jar $1 $2 )
+    printf "$result\n"
+}
+
 test cd ..
 test rm -rf generated
 
-echo "create baseline"
 # generate baseline
 test mvn clean compile -Dmaven.test.skip=true >> log.txt
 test mkdir generated
 test cp -r target/classes generated;
 
+
+# compare reference build with another empty one
+printf "none;"
+test mvn clean compile -Dmaven.test.skip=true >> log.txt
+compare generated/classes target/classes
+
+
 processors=(
-    "none"
+    # only apply spoon, without mutation processor
+    "spoon"
     
     "fr.inria.diversify.EncryptLiteralProcessor"
     "fr.inria.diversify.InvertIfProcessor"
@@ -35,13 +47,13 @@ processors=(
     "cohen.process.ReverseIf"
     "cohen.process.ThreadCreationProcessor"
 )
- 
+
 for processor in "${processors[@]}"
 do
-    echo $processor
+    printf "$processor;"
     # generate artifact to compare
     test mvn clean compile -Dmaven.test.skip=true -Pdiversify -Dprocessor=$processor >> log.txt
 
     # compute similarity
-    test java -jar diversify/Diffcompule-1.0-SNAPSHOT-jar-with-dependencies.jar generated/classes  target/classes
+    compare generated/classes target/classes
 done
