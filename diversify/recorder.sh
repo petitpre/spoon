@@ -54,8 +54,8 @@ do
     done
 done
 
+echo "record with all processors"
 for j in `seq 1 10`
    do
-        echo "record with all processors"
         record -Pdiversify-all
    done
