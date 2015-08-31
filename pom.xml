@@ -134,10 +134,13 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>make-assembly</id><!-- this is used for inheritance merges -->
-                        <phase>package</phase><!-- append to the packaging phase. -->
+                        <id>make-assembly</id>
+                        <!-- this is used for inheritance merges -->
+                        <phase>package</phase>
+                        <!-- append to the packaging phase. -->
                         <goals>
-                            <goal>attached</goal><!-- goals == mojos -->
+                            <goal>attached</goal>
+                            <!-- goals == mojos -->
                         </goals>
                     </execution>
                 </executions>
@@ -208,6 +211,11 @@
 
                         <configuration>
                             <processors>
+                                <processor>cohen.process.EmptyMethod</processor>
+                                <processor>cohen.process.EquivalenceInstr</processor>
+                                <processor>cohen.process.ReverseIf</processor>
+                                <processor>cohen.process.ThreadCreationProcessor</processor>
+
                                 <processor>fr.inria.diversify.VariableDeclaration</processor>
                                 <processor>fr.inria.diversify.FantomProcessor</processor>
                                 <processor>fr.inria.diversify.InvertIfProcessor</processor>

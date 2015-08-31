@@ -57,3 +57,10 @@ do
     # compute similarity
     compare generated/classes target/classes
 done
+
+
+printf "all;"
+# generate artifact to compare
+test mvn clean compile -Dmaven.test.skip=true -Pdiversify-all >> log.txt
+# compute similarity
+compare generated/classes target/classes
